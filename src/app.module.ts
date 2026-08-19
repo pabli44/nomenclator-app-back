@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ExampleModule } from './modules/example/example.module';
 import { PostalsModule } from './modules/postals/postals.module';
 import { LikesModule } from './modules/likes/likes.module';
+import { SavedItemsModule } from './modules/saved-items/saved-items.module';
 import databaseConfig from './config/database.config';
 import { envValidationSchema } from './config/env.validation';
 
@@ -27,6 +28,7 @@ import { envValidationSchema } from './config/env.validation';
     ExampleModule,
     PostalsModule,
     LikesModule,
+    SavedItemsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
