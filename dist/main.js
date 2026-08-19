@@ -4,6 +4,7 @@ const core_1 = require("@nestjs/core");
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const app_module_1 = require("./app.module");
+const environment_config_1 = require("./config/environment.config");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors();
@@ -13,14 +14,16 @@ async function bootstrap() {
         forbidNonWhitelisted: true,
         transform: true,
     }));
-    const config = new swagger_1.DocumentBuilder()
-        .setTitle('Nomenclator API')
-        .setDescription('Nomenclator REST API')
-        .setVersion('1.0')
-        .addBearerAuth()
-        .build();
-    const document = swagger_1.SwaggerModule.createDocument(app, config);
-    swagger_1.SwaggerModule.setup('api/docs', app, document);
+    if (!(0, environment_config_1.isVercelProduction)(process.env.VERCEL_ENV)) {
+        const config = new swagger_1.DocumentBuilder()
+            .setTitle('Nomenclator API')
+            .setDescription('Nomenclator REST API')
+            .setVersion('1.0')
+            .addBearerAuth()
+            .build();
+        const document = swagger_1.SwaggerModule.createDocument(app, config);
+        swagger_1.SwaggerModule.setup('api/docs', app, document);
+    }
     await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

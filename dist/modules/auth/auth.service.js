@@ -46,13 +46,22 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
+exports.isUniqueViolation = isUniqueViolation;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
+const crypto_1 = require("crypto");
 const user_entity_1 = require("./entities/user.entity");
 const bcrypt = __importStar(require("bcryptjs"));
+function isUniqueViolation(error) {
+    if (typeof error !== 'object' || error === null)
+        return false;
+    const driverError = error
+        .driverError;
+    return driverError?.code === '23505';
+}
 let AuthService = class AuthService {
     usersRepository;
     jwtService;
@@ -71,6 +80,36 @@ let AuthService = class AuthService {
         });
         return this.usersRepository.save(user);
     }
+    async registerGuest(deviceId) {
+        const email = `guest-${deviceId}@device.local`;
+        try {
+            let user = await this.usersRepository.findOne({ where: { email } });
+            if (!user) {
+                const password = (0, crypto_1.randomBytes)(24).toString('hex');
+                const hashedPassword = await bcrypt.hash(password, 10);
+                user = this.usersRepository.create({ email, password: hashedPassword });
+                user = await this.usersRepository.save(user);
+            }
+            return this.buildAuthResponse(user);
+        }
+        catch (error) {
+            if (isUniqueViolation(error)) {
+                const existing = await this.usersRepository.findOne({
+                    where: { email },
+                });
+                if (existing)
+                    return this.buildAuthResponse(existing);
+            }
+            throw error;
+        }
+    }
+    buildAuthResponse(user) {
+        const payload = { sub: user.id, email: user.email };
+        return {
+            access_token: this.jwtService.sign(payload),
+            user: { id: user.id, email: user.email },
+        };
+    }
     async validateUser(email, password) {
         const user = await this.usersRepository.findOne({ where: { email } });
         if (!user)
@@ -86,11 +125,7 @@ let AuthService = class AuthService {
         if (!user) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
-        const payload = { sub: user.id, email: user.email };
-        return {
-            access_token: this.jwtService.sign(payload),
-            user: { id: user.id, email: user.email },
-        };
+        return this.buildAuthResponse(user);
     }
 };
 exports.AuthService = AuthService;

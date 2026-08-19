@@ -1,14 +1,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = require("@nestjs/config");
-exports.default = (0, config_1.registerAs)('database', () => ({
-    type: 'postgres',
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432', 10),
-    username: process.env.DB_USERNAME || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
-    database: process.env.DB_NAME || 'nomenclator_db',
-    autoLoadEntities: true,
-    synchronize: process.env.NODE_ENV !== 'production',
-}));
+exports.default = (0, config_1.registerAs)('database', () => {
+    const databaseUrl = process.env.DATABASE_URL;
+    if (databaseUrl) {
+        return {
+            type: 'postgres',
+            url: databaseUrl,
+            autoLoadEntities: true,
+            ssl: true,
+            extra: {
+                max: 5,
+                connectionTimeoutMillis: 10000,
+            },
+            synchronize: process.env.NODE_ENV !== 'production',
+        };
+    }
+    return {
+        type: 'postgres',
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT || '5432', 10),
+        username: process.env.DB_USERNAME || 'postgres',
+        password: process.env.DB_PASSWORD || 'postgres',
+        database: process.env.DB_NAME || 'nomenclator_db',
+        autoLoadEntities: true,
+        synchronize: process.env.NODE_ENV !== 'production',
+    };
+});
 //# sourceMappingURL=database.config.js.map
