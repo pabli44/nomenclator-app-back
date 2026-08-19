@@ -12,10 +12,11 @@ function buildMigrationDataSourceOptions(env) {
     if (!url) {
         throw new Error('Missing database url for migrations: set DIRECT_DATABASE_URL (or DATABASE_URL)');
     }
+    const useSsl = !/localhost|127\.0\.0\.1/.test(url);
     return {
         type: 'postgres',
         url,
-        ssl: true,
+        ssl: useSsl,
         extra: {
             max: 1,
             connectionTimeoutMillis: 10000,

@@ -22,10 +22,15 @@ export function buildMigrationDataSourceOptions(
     );
   }
 
+  // Local dev Postgres (localhost/127.0.0.1) has no TLS; remote hosts (Neon)
+  // require it. Deriving from the host keeps local runs and production correct
+  // without extra environment switches.
+  const useSsl = !/localhost|127\.0\.0\.1/.test(url);
+
   return {
     type: 'postgres',
     url,
-    ssl: true,
+    ssl: useSsl,
     extra: {
       // Single connection: migrations are one-shot DDL runs.
       max: 1,

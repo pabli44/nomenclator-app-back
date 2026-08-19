@@ -17,6 +17,9 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const auth_module_1 = require("./modules/auth/auth.module");
 const example_module_1 = require("./modules/example/example.module");
+const postals_module_1 = require("./modules/postals/postals.module");
+const likes_module_1 = require("./modules/likes/likes.module");
+const saved_items_module_1 = require("./modules/saved-items/saved-items.module");
 const database_config_1 = __importDefault(require("./config/database.config"));
 const env_validation_1 = require("./config/env.validation");
 let AppModule = class AppModule {
@@ -37,6 +40,9 @@ exports.AppModule = AppModule = __decorate([
             }),
             auth_module_1.AuthModule,
             example_module_1.ExampleModule,
+            postals_module_1.PostalsModule,
+            likes_module_1.LikesModule,
+            saved_items_module_1.SavedItemsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
