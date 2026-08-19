@@ -17,8 +17,8 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const register_dto_1 = require("./dto/register.dto");
 const login_dto_1 = require("./dto/login.dto");
+const guest_dto_1 = require("./dto/guest.dto");
 const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
-const common_2 = require("@nestjs/common");
 const response_interceptor_1 = require("../../common/interceptors/response.interceptor");
 const swagger_1 = require("@nestjs/swagger");
 let AuthController = class AuthController {
@@ -33,6 +33,9 @@ let AuthController = class AuthController {
     async login(loginDto) {
         return this.authService.login(loginDto);
     }
+    async registerGuest(guestDto) {
+        return this.authService.registerGuest(guestDto.deviceId);
+    }
     getProfile(req) {
         return req.user;
     }
@@ -41,7 +44,7 @@ exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)('register'),
     (0, swagger_1.ApiOperation)({ summary: 'Register a new user' }),
-    (0, common_2.UseInterceptors)(response_interceptor_1.ResponseInterceptor),
+    (0, common_1.UseInterceptors)(response_interceptor_1.ResponseInterceptor),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [register_dto_1.RegisterDto]),
@@ -55,6 +58,18 @@ __decorate([
     __metadata("design:paramtypes", [login_dto_1.LoginDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('guest'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Register or reuse a guest user (find-or-create by device UUID)',
+    }),
+    (0, common_1.UseInterceptors)(response_interceptor_1.ResponseInterceptor),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [guest_dto_1.GuestDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "registerGuest", null);
 __decorate([
     (0, common_1.Post)('profile'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

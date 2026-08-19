@@ -35,14 +35,43 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.envValidationSchema = void 0;
 const Joi = __importStar(require("joi"));
+const DATABASE_GROUP = [
+    'DB_HOST',
+    'DB_PORT',
+    'DB_USERNAME',
+    'DB_PASSWORD',
+    'DB_NAME',
+];
 exports.envValidationSchema = Joi.object({
     PORT: Joi.number().default(3000),
-    DB_HOST: Joi.string().required(),
-    DB_PORT: Joi.number().default(5432),
-    DB_USERNAME: Joi.string().required(),
-    DB_PASSWORD: Joi.string().required(),
-    DB_NAME: Joi.string().required(),
+    DATABASE_URL: Joi.string()
+        .uri({ scheme: ['postgres', 'postgresql'] })
+        .optional(),
+    DIRECT_DATABASE_URL: Joi.string()
+        .uri({ scheme: ['postgres', 'postgresql'] })
+        .optional(),
+    DATABASE_URL_DIRECT: Joi.string()
+        .uri({ scheme: ['postgres', 'postgresql'] })
+        .optional(),
+    DB_HOST: Joi.string().optional(),
+    DB_PORT: Joi.number().default(5432).optional(),
+    DB_USERNAME: Joi.string().optional(),
+    DB_PASSWORD: Joi.string().optional(),
+    DB_NAME: Joi.string().optional(),
+    NODE_ENV: Joi.string().optional(),
+    VERCEL_ENV: Joi.string()
+        .valid('production', 'preview', 'development')
+        .optional(),
     JWT_SECRET: Joi.string().required(),
     JWT_EXPIRATION: Joi.string().default('7d'),
+}).custom((value, helpers) => {
+    const hasUrl = Boolean(value.DATABASE_URL);
+    const hasDatabaseGroup = DATABASE_GROUP.every((key) => value[key] !== undefined && value[key] !== '');
+    if (!hasUrl && !hasDatabaseGroup) {
+        return helpers.error('any.custom', {
+            message: 'Provide either DATABASE_URL (Neon pooled) or the DB_HOST/DB_PORT/DB_USERNAME/DB_PASSWORD/DB_NAME group',
+        });
+    }
+    return value;
 });
 //# sourceMappingURL=env.validation.js.map
