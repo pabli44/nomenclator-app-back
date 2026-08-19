@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import { InitSchema1753000000000 } from './1753000000000-InitSchema';
+import { InitSchema1753000000000 } from '../1753000000000-InitSchema';
 
 describe('InitSchema migration (REQ-SD-2/3, D4)', () => {
   const buildQueryRunner = () => {

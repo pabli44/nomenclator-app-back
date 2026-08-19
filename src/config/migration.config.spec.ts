@@ -51,6 +51,23 @@ describe('migration data source options', () => {
     ]);
   });
 
+  it('disables SSL for localhost and keeps it enabled for remote hosts', () => {
+    const local = buildMigrationDataSourceOptions({
+      DIRECT_DATABASE_URL:
+        'postgres://postgres:postgres@localhost:5433/nomenclator_db',
+    });
+    const localIp = buildMigrationDataSourceOptions({
+      DIRECT_DATABASE_URL: 'postgres://postgres:postgres@127.0.0.1:5433/db',
+    });
+    const remote = buildMigrationDataSourceOptions({
+      DIRECT_DATABASE_URL: 'postgres://u:p@direct.neon.tech/db',
+    });
+
+    expect(local.ssl).toBe(false);
+    expect(localIp.ssl).toBe(false);
+    expect(remote.ssl).toBe(true);
+  });
+
   it('throws when no database url is configured', () => {
     expect(() => buildMigrationDataSourceOptions({})).toThrow(
       /DIRECT_DATABASE_URL|DATABASE_URL/,
