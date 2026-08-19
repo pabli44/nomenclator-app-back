@@ -9,6 +9,8 @@ import { buildMigrationDataSourceOptions } from './config/migration.config';
  * Single default export: the TypeORM CLI rejects files exposing more than one
  * DataSource instance.
  */
-const AppDataSource = new DataSource(buildMigrationDataSourceOptions(process.env));
+const AppDataSource = new DataSource(
+  buildMigrationDataSourceOptions(process.env),
+);
 
 export default AppDataSource;

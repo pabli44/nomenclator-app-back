@@ -6,11 +6,15 @@ import { User } from '../modules/auth/entities/user.entity';
  * Migrations must run against the Neon DIRECT (non-pooler) endpoint: the
  * pooled endpoint goes through PgBouncer in transaction mode, which breaks DDL.
  */
-export function resolveMigrationDatabaseUrl(env: NodeJS.ProcessEnv): string | undefined {
+export function resolveMigrationDatabaseUrl(
+  env: NodeJS.ProcessEnv,
+): string | undefined {
   return env.DIRECT_DATABASE_URL || env.DATABASE_URL_DIRECT || env.DATABASE_URL;
 }
 
-export function buildMigrationDataSourceOptions(env: NodeJS.ProcessEnv): DataSourceOptions {
+export function buildMigrationDataSourceOptions(
+  env: NodeJS.ProcessEnv,
+): DataSourceOptions {
   const url = resolveMigrationDatabaseUrl(env);
   if (!url) {
     throw new Error(

@@ -1,14 +1,26 @@
 import * as Joi from 'joi';
 
-const DATABASE_GROUP = ['DB_HOST', 'DB_PORT', 'DB_USERNAME', 'DB_PASSWORD', 'DB_NAME'];
+const DATABASE_GROUP = [
+  'DB_HOST',
+  'DB_PORT',
+  'DB_USERNAME',
+  'DB_PASSWORD',
+  'DB_NAME',
+];
 
 export const envValidationSchema = Joi.object({
   PORT: Joi.number().default(3000),
   // Neon url mode (runtime pooled + migrations direct). At least one DB source
   // must be configured: either DATABASE_URL or the full DB_* group.
-  DATABASE_URL: Joi.string().uri({ scheme: ['postgres', 'postgresql'] }).optional(),
-  DIRECT_DATABASE_URL: Joi.string().uri({ scheme: ['postgres', 'postgresql'] }).optional(),
-  DATABASE_URL_DIRECT: Joi.string().uri({ scheme: ['postgres', 'postgresql'] }).optional(),
+  DATABASE_URL: Joi.string()
+    .uri({ scheme: ['postgres', 'postgresql'] })
+    .optional(),
+  DIRECT_DATABASE_URL: Joi.string()
+    .uri({ scheme: ['postgres', 'postgresql'] })
+    .optional(),
+  DATABASE_URL_DIRECT: Joi.string()
+    .uri({ scheme: ['postgres', 'postgresql'] })
+    .optional(),
   DB_HOST: Joi.string().optional(),
   DB_PORT: Joi.number().default(5432).optional(),
   DB_USERNAME: Joi.string().optional(),
@@ -17,10 +29,12 @@ export const envValidationSchema = Joi.object({
   // Vercel always sets NODE_ENV=production, even on previews; use VERCEL_ENV to
   // discriminate environments (e.g. Swagger gating).
   NODE_ENV: Joi.string().optional(),
-  VERCEL_ENV: Joi.string().valid('production', 'preview', 'development').optional(),
+  VERCEL_ENV: Joi.string()
+    .valid('production', 'preview', 'development')
+    .optional(),
   JWT_SECRET: Joi.string().required(),
   JWT_EXPIRATION: Joi.string().default('7d'),
-}).custom((value, helpers) => {
+}).custom((value: Record<string, unknown>, helpers: Joi.CustomHelpers) => {
   const hasUrl = Boolean(value.DATABASE_URL);
   const hasDatabaseGroup = DATABASE_GROUP.every(
     (key) => value[key] !== undefined && value[key] !== '',
