@@ -1,9 +1,18 @@
-import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Request,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { GuestDto } from './dto/guest.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { UseInterceptors } from '@nestjs/common';
 import { ResponseInterceptor } from '../../common/interceptors/response.interceptor';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 
@@ -26,11 +35,21 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+  @Post('guest')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Register or reuse a guest user (find-or-create by device UUID)',
+  })
+  @UseInterceptors(ResponseInterceptor)
+  async registerGuest(@Body() guestDto: GuestDto) {
+    return this.authService.registerGuest(guestDto.deviceId);
+  }
+
   @Post('profile')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get current user profile' })
-  getProfile(@Request() req) {
+  getProfile(@Request() req: { user: { id: string; email: string } }) {
     return req.user;
   }
 }
