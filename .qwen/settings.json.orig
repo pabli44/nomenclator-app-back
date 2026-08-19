@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp *)",
+      "Bash(docker compose up *)",
+      "Bash(sudo *)",
+      "Bash(echo *)",
+      "Bash(docker *)",
+      "Bash(psql *)",
+      "Bash(nc *)",
+      "Bash(npm run *)",
+      "Bash(podman *)",
+      "Bash(podman-compose *)",
+      "Bash(pip3 show *)",
+      "Bash(cat *)",
+      "Bash(chmod *)",
+      "Bash(id *)",
+      "Bash(getent *)",
+      "Bash(sysctl *)",
+      "Bash(curl *)"
+    ]
+  },
+  "$version": 4
+}
