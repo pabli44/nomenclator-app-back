@@ -8,7 +8,7 @@ const environment_config_1 = require("./config/environment.config");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors();
-    app.setGlobalPrefix('api');
+    app.setGlobalPrefix('');
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
         forbidNonWhitelisted: true,
